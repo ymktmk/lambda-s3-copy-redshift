@@ -1,0 +1,38 @@
+service: lambda-s3-copy-redshift
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: ap-northeast-1
+
+# IAM Role here
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:ListBucket"
+          Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+        - Effect: "Allow"
+          Action:
+            - "s3:PutObject"
+          Resource:
+            Fn::Join:
+              - ""
+              - - "arn:aws:s3:::"
+                - "Ref" : "ServerlessDeploymentBucket"
+                - "/*"
+                
+# package:
+#   patterns:
+#     - '!exclude-me.py'
+#     - '!exclude-me-dir/**'
+#     - include-me.py
+#     - include-me-dir/**
+
+functions:
+  lambda-s3-copy-redshift:
+    handler: handler.lambda_handler
